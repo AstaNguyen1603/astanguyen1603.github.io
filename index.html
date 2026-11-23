@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trong Bao Nguyen | Business Analytics projects</title>
+  <meta name="description" content="Case studies by Trong Bao Nguyen, a Business Analytics student at Monash University: forecasting, risk modelling, clustering and data auditing in R.">
+  <!-- The next line keeps this page out of Google search results. People with the link can still open it. Delete the line if you want the site to be found by searching. -->
+  <meta name="robots" content="noindex">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Trong Bao Nguyen | Business Analytics projects">
+  <meta property="og:description" content="Four projects told as the decisions behind them, with the evidence for each.">
+  <meta property="og:url" content="https://astanguyen1603.github.io/">
+  <meta name="theme-color" content="#F6F8F7">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23F6F8F7'/%3E%3Crect x='15' y='2' width='2' height='28' fill='%231F6F78'/%3E%3Ccircle cx='16' cy='16' r='7.5' fill='%239A6B12'/%3E%3C/svg%3E">
+  <link rel="preload" href="assets/fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to the projects</a>
+<div class="page">
+
+  <header class="hero">
+    <h1 class="hero-name">Trong Bao Nguyen</h1>
+    <p class="hero-role">Business Analytics student at Monash University, graduating June 2027</p>
+    <p class="hero-statement">These four projects are told as a trail of decisions. For each step you can see what I chose, why I chose it and the evidence behind it.</p>
+    <ul class="contact-links">
+      <li><a href="mailto:diggory16032006@gmail.com">Email</a></li>
+      <li><a href="https://www.linkedin.com/in/b%E1%BA%A3o-tr%E1%BB%8Dng-566051376">LinkedIn</a></li>
+    </ul>
+  </header>
+
+  <nav class="row index" aria-labelledby="projects-heading">
+    <h2 class="row-label" id="projects-heading">Projects</h2>
+    <ul class="index-list">
+      <li><a class="index-link" href="#forecasting"><span class="index-title">Forecasting Australian retail turnover</span><span class="index-sub">Applied Forecasting, individual</span></a></li>
+      <li><a class="index-link" href="#greenlight"><span class="index-title">Greenlight risk model for a case study film studio</span><span class="index-sub">Statistical Thinking, group of four</span></a></li>
+      <li><a class="index-link" href="#development"><span class="index-title">Beyond income: patterns of development</span><span class="index-sub">High Dimensional Data Analysis, group of five</span></a></li>
+      <li><a class="index-link" href="#steam-audit"><span class="index-title">Data audit of a Steam market intelligence report</span><span class="index-sub">Introduction to Data Analysis, individual</span></a></li>
+    </ul>
+  </nav>
+
+  <main id="main">
+
+    <!-- Project 1. To add a project later, copy one whole <article> block and change its text. -->
+    <article class="project" id="forecasting" aria-labelledby="forecasting-title">
+      <h2 class="project-title" id="forecasting-title">Forecasting Australian retail turnover</h2>
+      <dl class="project-meta">
+        <div><dt>Unit</dt><dd>ETC3550 Applied Forecasting, Semester 2, 2026</dd></div>
+        <div><dt>Team</dt><dd>Individual</dd></div>
+        <div><dt>Marks</dt><dd>Project 98.75/100. Assignments 11.5/12 and 12/12.</dd></div>
+        <div><dt>Tools</dt><dd>R (fpp3), Quarto</dd></div>
+      </dl>
+      <div class="project-body">
+        <p class="lede">The data were 489 months of turnover for clothing, footwear and accessory retailing in the ACT, from April 1982 to December 2022. The series has a sharp December peak that grows with the level, and two lockdown months far below anything earlier. Across three assignments and a final project, I had to decide how to transform it, how to judge accuracy and which model to trust.</p>
+        <ol class="trail" role="list">
+          <li>
+            <h3 class="step-title">Log the data instead of using the Guerrero value</h3>
+            <p class="step-reason">Both options steadied the seasonal swing, so I kept the one whose output can be read: on a log scale, a change is a percentage change. The Guerrero value also leaned on the two lockdown months. On data to 2019 the method returned about minus 0.14.</p>
+            <dl class="evidence">
+              <div><dt>Within year swing, raw data</dt><dd>Grows almost fivefold</dd></div>
+              <div><dt>Within year swing, after the log</dt><dd>Close to flat</dd></div>
+            </dl>
+          </li>
+          <li>
+            <h3 class="step-title">Judge accuracy by cross-validation, not one test set</h3>
+            <p class="step-reason">Of the 48 test months, 36 fell in 2020 to 2022, the period with both lockdown outliers. One window can make two methods look equal or far apart. Cross-validation averages over 26 training sets and every horizon from 1 to 60 months.</p>
+            <dl class="evidence">
+              <div><dt>RMSE, 2019 only</dt><dd>ETS 1.4746, seasonal naive 1.4751</dd></div>
+              <div><dt>RMSE, test set 2019 to 2022</dt><dd>ETS 7.93, seasonal naive 8.36 (about 5% lower)</dd></div>
+              <div><dt>RMSE, cross-validation</dt><dd>ETS 4.72, seasonal naive 6.00 (about 21% lower)</dd></div>
+            </dl>
+          </li>
+          <li>
+            <h3 class="step-title">Take one seasonal difference and stop</h3>
+            <p class="step-reason">The KPSS test rejected stationarity for log turnover, but not after one seasonal difference. The p-value was close to 5%, so a first difference was defensible too. I left it out because the textbook warns that unnecessary differences create false dynamics.</p>
+            <dl class="evidence">
+              <div><dt>KPSS, log turnover</dt><dd>7.19, p = 0.01</dd></div>
+              <div><dt>KPSS, after one seasonal difference</dt><dd>0.445, p = 0.058</dd></div>
+              <div><dt>Choice</dt><dd>d = 0, D = 1</dd></div>
+            </dl>
+          </li>
+          <li>
+            <h3 class="step-title">Let the test set decide, and AIC break the tie</h3>
+            <p class="step-reason">The automatic ARIMA had the best AIC but the worst test RMSE, so its extra terms improved the fit without improving the forecasts. AR(1) and AR(3) were less than 1% apart and swapped order in 2019. AIC can compare them because they share the same differencing, and it favoured AR(3) by 34.</p>
+            <dl class="evidence">
+              <div><dt>Test RMSE</dt><dd>AR(1) 8.72, AR(3) 8.80, automatic 9.18</dd></div>
+              <div><dt>AIC</dt><dd>Automatic minus 1192, AR(3) minus 1178, AR(1) minus 1144</dd></div>
+              <div><dt>Choice</dt><dd>AR(3)</dd></div>
+            </dl>
+          </li>
+          <li>
+            <h3 class="step-title">Report it when the benchmark wins</h3>
+            <p class="step-reason">In the final project, seasonal naive beat my models on the last 24 months. I showed why: the models absorbed the 2021 lockdown.</p>
+            <dl class="evidence">
+              <div><dt>MAPE, my forecast</dt><dd>5.5%</dd></div>
+              <div><dt>MAPE, seasonal naive</dt><dd>4.9%</dd></div>
+            </dl>
+          </li>
+        </ol>
+      </div>
+    </article>
+
+    <!-- Project 2 -->
+    <article class="project" id="greenlight" aria-labelledby="greenlight-title">
+      <h2 class="project-title" id="greenlight-title">Greenlight risk model for a case study film studio</h2>
+      <dl class="project-meta">
+        <div><dt>Unit</dt><dd>ETC2420 Statistical Thinking, Semester 2, 2026</dd></div>
+        <div><dt>Team</dt><dd>Group of four. I coordinated the group and wrote the modelling task.</dd></div>
+        <div><dt>Mark</dt><dd>Group mark 99/100</dd></div>
+        <div><dt>Tools</dt><dd>R (glm, brms), Quarto</dd></div>
+      </dl>
+      <div class="project-body">
+        <p class="lede">The studio wanted to know, before greenlighting a pitch, how likely it was to flop: to take less at the worldwide box office than its budget. I wrote the model using 3,208 past films. As coordinator, I also wrote the group brief and outline with shared rules, divided the work, organised the meetings, checked every task and merged the final report.</p>
+        <ol class="trail" role="list">
+          <li>
+            <h3 class="step-title">Model the outcome as yes or no</h3>
+            <p class="step-reason">A flop is an ROI below 1, so the model must return a probability between 0 and 1. A linear model can go outside that range and a Poisson model is built for counts. I used logistic regression and fitted it twice: by maximum likelihood with glm and as a Bayesian model with brms.</p>
+            <dl class="evidence">
+              <div><dt>Flops</dt><dd>779 of 3,208 films (24.3%)</dd></div>
+              <div><dt>Flop rate, originals and franchise films</dt><dd>25.6% and 5.9%</dd></div>
+            </dl>
+          </li>
+          <li>
+            <h3 class="step-title">Use only what is known at the pitch</h3>
+            <p class="step-reason">The studio decides before release, so revenue, profit, audience scores and popularity were never predictors. I put budget in three bands because flops peak in the middle band, a curve that a straight line in log budget misses.</p>
+            <dl class="evidence">
+              <div><dt>Predictors</dt><dd>Genre, franchise status, budget band, planned cast size</dd></div>
+              <div><dt>Flop rate by budget</dt><dd>20% at $5M or less, 27% from $5M to $100M, 8% above $100M</dd></div>
+              <div><dt>AIC</dt><dd>3,354 with bands, 3,395 with log budget</dd></div>
+            </dl>
+          </li>
+          <li>
+            <h3 class="step-title">Flag pitches at 0.25, not 0.5</h3>
+            <p class="step-reason">At 0.5 the model flagged no film at all, yet it showed its best accuracy by calling every film a success. A flag only sends a pitch back for review, while a missed flop costs its unrecovered budget, so catching flops came first.</p>
+            <dl class="evidence">
+              <div><dt>Films the model had not seen</dt><dd>802</dd></div>
+              <div><dt>Sensitivity at 0.25</dt><dd>0.766</dd></div>
+              <div><dt>Specificity at 0.25</dt><dd>0.510</dd></div>
+              <div><dt>Median budget lost per flop</dt><dd>$9.6M</dd></div>
+            </dl>
+          </li>
+          <li>
+            <h3 class="step-title">Tell managers where the model stops</h3>
+            <p class="step-reason">My summary for the Head of Production says what the model can be trusted to say and what it cannot. It cannot promise that a pitch will succeed, and it never sees the script, the director, the release date or the marketing spend.</p>
+            <dl class="evidence">
+              <div><dt>Flops it flagged</dt><dd>About three quarters</dd></div>
+              <div><dt>Successful films it also flagged</dt><dd>About half</dd></div>
+              <div><dt>Cleared films that still flopped</dt><dd>About one in eight</dd></div>
+            </dl>
+          </li>
+        </ol>
+      </div>
+    </article>
+
+    <!-- Project 3 -->
+    <article class="project" id="development" aria-labelledby="development-title">
+      <h2 class="project-title" id="development-title">Beyond income: patterns of development</h2>
+      <dl class="project-meta">
+        <div><dt>Unit</dt><dd>ETX3500 High Dimensional Data Analysis, Semester 2, 2026</dd></div>
+        <div><dt>Team</dt><dd>Group of five. I wrote the section on country groups.</dd></div>
+        <div><dt>Marks</dt><dd>Report 69/80. Exercises 19.5/20, 25/25 and 44/45.</dd></div>
+        <div><dt>Tools</dt><dd>R, Quarto</dd></div>
+      </dl>
+      <div class="project-body">
+        <p class="lede">Our group studied 191 economies on 21 World Bank indicators, using factor analysis, multidimensional scaling and clustering. My section answered two questions: which economies belong together, and how many groups the evidence supports.</p>
+        <ol class="trail" role="list">
+          <li>
+            <h3 class="step-title">Use Ward's method and check it against k-means</h3>
+            <p class="step-reason">Single and complete linkage split off individual economies. Ward chooses each merge to keep the rise in the within cluster sum of squares (WSS) as small as possible.</p>
+            <dl class="evidence">
+              <div><dt>Group counts tested</dt><dd>Two to eight</dd></div>
+            </dl>
+          </li>
+          <li>
+            <h3 class="step-title">Make every group count pass four tests</h3>
+            <p class="step-reason">A count was supported only if it passed all four: a larger gap in merge heights above the cut than below it, a fall in WSS of at least 10% that drops below 10% at the next split, agreement with k-means (adjusted Rand index of at least 0.60) and stability across random starts (at least 0.90).</p>
+            <dl class="evidence">
+              <div><dt>Counts that passed all four</dt><dd>Three groups only</dd></div>
+              <div><dt>Fall in WSS</dt><dd>15.8% at three groups, 6.4% at four</dd></div>
+              <div><dt>Agreement and stability at three</dt><dd>0.69 and 1.00</dd></div>
+            </dl>
+          </li>
+          <li>
+            <h3 class="step-title">Keep the Gulf states for description only</h3>
+            <p class="step-reason">The fourth split separates the six Gulf states, oil exporters that rely on migrant workers. It fails the height gap test, so I report them inside the high development group instead of as a group of their own.</p>
+            <dl class="evidence">
+              <div><dt>Median industry share of GDP</dt><dd>51.5% in the Gulf states, 23.6% in the rest of the group</dd></div>
+              <div><dt>Median health spending share of GDP</dt><dd>4.5% and 8.8%</dd></div>
+            </dl>
+          </li>
+          <li>
+            <h3 class="step-title">Test how firm the boundaries are</h3>
+            <p class="step-reason">I reran the grouping under other choices to see which economies move. Some do, so the groups support broad profiles, not fixed labels.</p>
+            <dl class="evidence">
+              <div><dt>k-means instead of Ward</dt><dd>20 economies move</dd></div>
+              <div><dt>Another transformation of GDP growth</dt><dd>14 economies move</dd></div>
+              <div><dt>Without growth or the three extreme economies</dt><dd>The high development group stays together but gains members</dd></div>
+            </dl>
+          </li>
+          <li>
+            <h3 class="step-title">Describe each group with medians</h3>
+            <p class="step-reason">Most of the difference between the groups is about the level of development, so I described each group with medians of the observed indicators.</p>
+            <dl class="evidence">
+              <div><dt>Development score variation between groups</dt><dd>79%, against 5% and 18% for the other two scores</dd></div>
+              <div><dt>Median income per person (PPP)</dt><dd>3,545 international dollars in the low group, 63,467 in the high group</dd></div>
+              <div><dt>Deaths under age five per 1,000 live births</dt><dd>54.4 in the low group, 3.8 in the high group</dd></div>
+            </dl>
+          </li>
+        </ol>
+        <figure class="figure">
+          <a href="assets/img/etx3500-figure-e1.png" aria-label="Open the full size figure"><img src="assets/img/etx3500-figure-e1.png" width="1800" height="668" loading="lazy" alt="Two panels. Left: a Ward dendrogram of 191 economies, cut into three boxed groups labelled A, B and C. Right: within cluster sum of squares for one to ten clusters under Ward's method and k-means, falling steeply up to three clusters and slowly after that, with a dotted line at three."></a>
+          <figcaption>From my section of the group report. Left: Ward dendrogram of the 191 economies with the three groups boxed. Right: within cluster sum of squares for one to ten clusters under Ward's method and k-means. The dotted line marks the three groups I selected.</figcaption>
+        </figure>
+      </div>
+    </article>
+
+    <!-- Project 4 -->
+    <article class="project" id="steam-audit" aria-labelledby="steam-audit-title">
+      <h2 class="project-title" id="steam-audit-title">Data audit of a Steam market intelligence report</h2>
+      <dl class="project-meta">
+        <div><dt>Unit</dt><dd>ETC1010 Introduction to Data Analysis, Semester 1, 2026</dd></div>
+        <div><dt>Team</dt><dd>Individual</dd></div>
+        <div><dt>Mark</dt><dd>Full marks</dd></div>
+        <div><dt>Tools</dt><dd>R, Google Gemini</dd></div>
+      </dl>
+      <div class="project-body">
+        <p class="lede">A consultancy's draft report on 9,999 Steam games ran without errors and looked polished, and an investor was about to act on it. Working as the investor's analyst, I traced each conclusion back to the step that produced it, proved the error in R and rebuilt the analysis.</p>
+        <ol class="trail" role="list">
+          <li>
+            <h3 class="step-title">Count the rows after every join</h3>
+            <p class="step-reason">The draft joined review and genre tables straight onto the games table, so each game was copied once for every review and tag, and the genre price averages were weighted by review counts. I collapsed each table to one row per game before joining.</p>
+            <dl class="evidence">
+              <div><dt>Rows after two joins</dt><dd>9,999 games became 226,977 rows</dd></div>
+            </dl>
+          </li>
+          <li>
+            <h3 class="step-title">Ask why values are missing before filling them</h3>
+            <p class="step-reason">About 82% of games had no critic score, and those games had far fewer reviews. The scores were missing because the games were less visible, so filling them with the mean would invent verdicts. I kept a flag instead.</p>
+            <dl class="evidence">
+              <div><dt>Median reviews, with a critic score</dt><dd>1,313</dd></div>
+              <div><dt>Median reviews, without one</dt><dd>333</dd></div>
+            </dl>
+          </li>
+          <li>
+            <h3 class="step-title">Scale the variables before clustering</h3>
+            <p class="step-reason">Review counts swamped price in the distance calculation, so the draft's price tiers were really popularity tiers. I standardised both and chose four clusters at the elbow of the WSS plot.</p>
+            <dl class="evidence">
+              <div><dt>Standard deviation, reviews</dt><dd>About 26,700</dd></div>
+              <div><dt>Standard deviation, price</dt><dd>About 12</dd></div>
+            </dl>
+          </li>
+          <li>
+            <h3 class="step-title">Read reviews in context</h3>
+            <p class="step-reason">A bag-of-words lexicon labelled one game's community toxic, but the reviews were sarcastic praise. I used LLM extraction in R to flag the sarcasm, then a RAG pipeline with Gemini embeddings to match games to the investor's brief by meaning instead of keywords.</p>
+            <dl class="evidence">
+              <div><dt>Reviews voted up</dt><dd>100%</dd></div>
+              <div><dt>Median playtime of reviewers</dt><dd>Over 1,600 hours</dd></div>
+            </dl>
+          </li>
+        </ol>
+      </div>
+    </article>
+
+    <section class="row background" aria-labelledby="background-title">
+      <h2 class="row-label" id="background-title">Background</h2>
+      <div>
+        <div class="background-group">
+          <h3 class="background-heading">Education</h3>
+          <div class="entry">
+            <p class="entry-title">Bachelor of Commerce, Business Analytics</p>
+            <p class="entry-meta">Monash University, expected June 2027</p>
+            <p>Weighted average mark 77.429, before Semester 2, 2026 results</p>
+          </div>
+          <div class="entry">
+            <p class="entry-title">UEH International School of Business (UEH-ISB)</p>
+            <p class="entry-meta">Vietnam, 2023 to 2025</p>
+            <p>Dean's Scholarship. Credits transferred to Monash.</p>
+          </div>
+        </div>
+        <div class="background-group">
+          <h3 class="background-heading">Work</h3>
+          <div class="entry">
+            <p class="entry-title">Sales Staff, VISSAN Joint Stock Company</p>
+            <p class="entry-meta">Vietnam, November 2024 to January 2026</p>
+            <p>Sold VISSAN products and generated VND 100 million in sales revenue each month.</p>
+          </div>
+        </div>
+        <div class="background-group">
+          <h3 class="background-heading">Industry project</h3>
+          <div class="entry">
+            <p class="entry-title">Sydney FC data analytics team</p>
+            <p class="entry-meta">Macquarie University, September 2026</p>
+            <p>Shortlisted twice and placed next in line.</p>
+          </div>
+        </div>
+        <div class="background-group">
+          <h3 class="background-heading">Skills</h3>
+          <dl class="skills">
+            <div><dt>Methods</dt><dd>Forecasting (ETS, ARIMA), logistic and Bayesian regression, factor analysis, clustering, RAG pipelines</dd></div>
+            <div><dt>Tools</dt><dd>R and RStudio, Python, Excel and Tableau (all intermediate), Quarto</dd></div>
+            <div><dt>Languages</dt><dd>Vietnamese (native), English (IELTS 6.5)</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="row site-footer">
+    <h2 class="row-label">Contact</h2>
+    <div>
+      <p class="footer-note">Each case study summarises marked coursework from Monash University. The full reports and code are not published here.</p>
+      <ul class="contact-links">
+        <li><a href="mailto:diggory16032006@gmail.com">diggory16032006@gmail.com</a></li>
+        <li><a href="https://www.linkedin.com/in/b%E1%BA%A3o-tr%E1%BB%8Dng-566051376">LinkedIn</a></li>
+      </ul>
+      <p class="updated">Updated November 2026</p>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
